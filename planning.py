@@ -13,6 +13,7 @@ def rollout_model(
     curr_state = initial_states # Starting from the initial state
     #========== TODO: start ==========
     # Hint1: concatenate current state and action pairs as the input for the model and predict the next observation
+    # for horizon number of steps
     # Hint2: get the predicted reward using reward_fn()
 
 
@@ -36,7 +37,7 @@ def get_ensemble_rewards(model, state_repeats, random_actions, horizon, reward_f
     #========== TODO: start ==========
     # For each model in the list of models, rollout the model and get the rewards using the rollout_model
     # function. Take the mean of the rewards over each time step to get the average reward to return for
-    # the passed action sequence.
+    # the passed action sequence. The output should be an array of the length of the number of random actions
 
 
 
@@ -47,8 +48,8 @@ def get_ensemble_rewards(model, state_repeats, random_actions, horizon, reward_f
 def plan_model_random_shooting(env, state, ac_size, horizon, model, reward_fn, n_samples_mpc=100):
     #========== TODO: start ==========
     # Hint1: randomly sample actions in the action space
-    # Hint2: rollout model based on current state and random action, select the best action that maximize the sum of the reward
-    # Rolling forward random actions through the model
+    # Hint2: rollout model based on current state and random action using the rollout_model function.
+    # Then select the best action that maximize the sum of the reward
 
     
     
@@ -66,7 +67,8 @@ def plan_model_mppi(env, state, ac_size, horizon, model, reward_fn, n_samples_mp
     if not isinstance(model, list):
         all_states, all_rewards = rollout_model(model, state_repeats, random_actions, horizon, reward_fn)
     else:
-        # NOTE: Implement this branch in part 4 of the writeup, not in part 3.
+        # NOTE: Implement this branch in part 4 of the writeup, not in part 3. This is for the ensemble model
+        # Use the get_ensemble_rewards function to get the rewards for the ensemble model
         pass
 
 
@@ -77,12 +79,14 @@ def plan_model_mppi(env, state, ac_size, horizon, model, reward_fn, n_samples_mp
 
     # Run through a few iterations of MPPI
 
-    #========== TODO: start ==========
-    # Hint1: Compute weights based on exponential of returns
-    # Hint2: sample actions based on the weight, and compute average return over models
-    # Hint3: if model type is a list, then implement ensemble mppi
-
+   
     for iter in range(n_iter_mppi):
+        #========== TODO: start ==========
+        # Hint1: Compute weights based on exponential of returns
+        # Hint2: sample actions based on the weight, and compute average return over models
+        # Hint3: if model type is a list, then implement ensemble mppi
+        # Hint4: Refer to the psudeocode in the writeup for more details
+
         # Weight trajectories by exponential of returns
 
 
@@ -91,9 +95,10 @@ def plan_model_mppi(env, state, ac_size, horizon, model, reward_fn, n_samples_mp
             # Rolling forward through the mdoel for horizon steps
             pass # Fill this in
         else:
-            # NOTE: Implement this branch in part 4 of the writeup, not in part 3.
+            # NOTE: Implement this branch in part 4 of the writeup, not in part 3. This is for the ensemble model.
+            # Use the get_ensemble_rewards function to get the rewards for the ensemble model
             pass
-    #========== TODO: end ==========
+        #========== TODO: end ==========
 
     # Finally take first action from best trajectory
     best_ac_idx = np.argmax(all_rewards.sum(axis=-1))

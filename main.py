@@ -2,7 +2,7 @@ import gymnasium as gym
 import torch
 import argparse
 from utils import DeterministicDynamicsModel, set_random_seed, reward_fn_reacher
-from train_model import simulate_mbrl
+from train_mbrl import simulate_mbrl
 from rollouts import evaluate
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print('using device', device)
