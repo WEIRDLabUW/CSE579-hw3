@@ -3,7 +3,7 @@ from utils import ReplayBuffer
 import torch
 import torch.optim as optim
 from train_model import train_model
-
+import numpy as np
 
 # Training loop for policy gradient
 def simulate_mbrl(env, model, plan_mode, num_epochs=200, max_path_length=200, mpc_horizon=10, n_samples_mpc=200, 
