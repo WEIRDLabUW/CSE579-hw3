@@ -49,38 +49,38 @@ def collect_traj_MBRL(
     o, _ = env.reset()
     if render:
         env.render()
-
-    while path_length < episode_length:
-        o_for_agent = o
-
-        # Using the planning agent to take actions
-        action = planning_agent(env, o_for_agent, model, reward_fn, plan_mode, mpc_horizon=mpc_horizon, n_samples_mpc=n_samples_mpc)
-        if len(action.shape) == 1:
-            action = action.unsqueeze(0)
-        action = action.cpu().detach().numpy()[0]
-
-        # Step the simulation forward
-        next_o, r, done, trunc,  env_info = env.step(copy.deepcopy(action))
-        done = done or trunc
-        if replay_buffer is not None:
-            replay_buffer.add(o,
-                            action,
-                            r,
-                            next_o,
-                            done)
-        # Render the environment
-        if render:
-            env.render()
-
-        raw_obs.append(o)
-        raw_next_obs.append(next_o)
-        actions.append(action)
-        rewards.append(r)
-        dones.append(done)
-        path_length += 1
-        if done:
-            break
-        o = next_o
+    with torch.no_grad():
+        while path_length < episode_length:
+            o_for_agent = o
+    
+            # Using the planning agent to take actions
+            action = planning_agent(env, o_for_agent, model, reward_fn, plan_mode, mpc_horizon=mpc_horizon, n_samples_mpc=n_samples_mpc)
+            if len(action.shape) == 1:
+                action = action.unsqueeze(0)
+            action = action.cpu().detach().numpy()[0]
+    
+            # Step the simulation forward
+            next_o, r, done, trunc,  env_info = env.step(copy.deepcopy(action))
+            done = done or trunc
+            if replay_buffer is not None:
+                replay_buffer.add(o,
+                                action,
+                                r,
+                                next_o,
+                                done)
+            # Render the environment
+            if render:
+                env.render()
+    
+            raw_obs.append(o)
+            raw_next_obs.append(next_o)
+            actions.append(action)
+            rewards.append(r)
+            dones.append(done)
+            path_length += 1
+            if done:
+                break
+            o = next_o
 
     # Prepare the items to be returned
     observations = np.array(raw_obs)
